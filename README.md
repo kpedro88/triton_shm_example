@@ -23,6 +23,7 @@ cmsenv
 cmsTriton -P -1 -v -n triton_server_instance -M $CMSSW_BASE/src/HeterogeneousCore/SonicTriton/data/models/ start
 ./resnet_grpc_shm_client2.exe
 ./resnet_grpc_shm_client.exe
+rm /dev/shm/shm*
 cmsTriton -P -1 -v -n triton_server_instance -M $CMSSW_BASE/src/HeterogeneousCore/SonicTriton/data/models/ stop
 ```
 
