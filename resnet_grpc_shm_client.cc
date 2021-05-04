@@ -162,8 +162,9 @@ template <typename T>
 std::shared_ptr<TritonShmResource> makeShmResource(const std::string& name, size_t outer_size, size_t inner_size){
   size_t overhead = (outer_size)*sizeof(Vec<T>);
   size_t content = outer_size*inner_size*sizeof(T);
-  std::cout << "makeShmResource: overhead = " << overhead << ", content = " << content << ", total = " << overhead + content << std::endl;
-  return std::make_shared<TritonShmResource>(name, overhead + content);
+  auto result = std::make_shared<TritonShmResource>(name, overhead + content);
+  std::cout << "makeShmResource: overhead = " << overhead << ", content = " << content << ", total = " << overhead + content << " (" << (void*)result->addr() << ")" << std::endl;
+  return result;
 }
 
 int

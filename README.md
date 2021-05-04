@@ -31,6 +31,12 @@ cmsTriton -P -1 -v -n triton_server_instance -M $CMSSW_BASE/src/HeterogeneousCor
 
 `resnet_grpc_shm_client2.exe` works as intended and produces the following output:
 ```
+shm : total = 3010560 (0x7fb508382000)
+memcpy() : 602112 bytes, 2408448 remaining (0x7fb508415000)
+memcpy() : 602112 bytes, 1806336 remaining (0x7fb5084a8000)
+memcpy() : 602112 bytes, 1204224 remaining (0x7fb50853b000)
+memcpy() : 602112 bytes, 602112 remaining (0x7fb5085ce000)
+memcpy() : 602112 bytes, 0 remaining (0x7fb508661000)
 batch 0
    inputs: 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, ...
    outputs: 0.000167075, 0.00060421, 7.23332e-05, 4.86887e-05, 0.000119915, 0.000246135, 1.82023e-05, 0.000186773, 5.15053e-05, 0.000431815, ...
@@ -69,7 +75,7 @@ PASS : System Shared Memory
 
 `resnet_grpc_shm_client.exe` does not work correctly; it sometimes produces the following output:
 ```
-makeShmResource: overhead = 160, content = 3010560, total = 3010720
+makeShmResource: overhead = 160, content = 3010560, total = 3010720 (0x7f0593f69000)
 TritonShmResource::allocate() : 160 bytes, 3010560 remaining (0x7f0593f69000)
 TritonShmResource::allocate() : 602112 bytes, 2408448 remaining (0x7f0593f690a0)
 TritonShmResource::allocate() : 602112 bytes, 1806336 remaining (0x7f0593ffc0a0)

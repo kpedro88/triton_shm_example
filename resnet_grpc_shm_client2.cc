@@ -224,12 +224,15 @@ main(int argc, char** argv)
   auto iresource0 = std::make_shared<TritonShmResource>(iname0, input_byte_size);
   std::vector<std::vector<float>> input0_vec(batch_size);
   float* input0_shm = (float*)iresource0->addr();
+  std::cout << "shm : total = " << input_byte_size << " (" << input0_shm << ")" << std::endl;
 
   // initialize to dummy values
+  size_t byte_size_per_batch = sizeof(float)*input_size;
   for (int i = 0; i < batch_size; ++i) {
     input0_vec[i].reserve(input_size);
     input0_vec[i].assign(input_size, float(i+1)/10.f);
-    std::memcpy(input0_shm + i*input_size, input0_vec[i].data(), sizeof(float)*input_size);
+    std::memcpy(input0_shm + i*input_size, input0_vec[i].data(), byte_size_per_batch);
+    std::cout << "memcpy() : " << byte_size_per_batch << " bytes, " << input_byte_size - (i+1)*byte_size_per_batch << " remaining (" << input0_shm + (i+1)*input_size << ")" << std::endl;
   }
 
   FAIL_IF_ERR(
