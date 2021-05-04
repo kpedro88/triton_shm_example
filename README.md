@@ -73,17 +73,54 @@ regions {
 PASS : System Shared Memory
 ```
 
-`resnet_grpc_shm_client.exe` does not work correctly; it sometimes produces the following output:
+`resnet_grpc_shm_client.exe` produces the same output using a nested vector approach, where all inner vectors share a contiguous memory region:
 ```
-makeShmResource: overhead = 160, content = 3010560, total = 3010720 (0x7f0593f69000)
-TritonShmResource::allocate() : 160 bytes, 3010560 remaining (0x7f0593f69000)
-TritonShmResource::allocate() : 602112 bytes, 2408448 remaining (0x7f0593f690a0)
-TritonShmResource::allocate() : 602112 bytes, 1806336 remaining (0x7f0593ffc0a0)
-TritonShmResource::allocate() : 602112 bytes, 1204224 remaining (0x7f059408f0a0)
-TritonShmResource::allocate() : 602112 bytes, 602112 remaining (0x7f05941220a0)
-TritonShmResource::allocate() : 602112 bytes, 0 remaining (0x7f05941b50a0)
+makeShmResource: overhead = 160, content = 3010560, total = 3010720 (0x7f2e5835d000)
+TritonShmResource::allocate() : 160 bytes, 3010560 remaining (0x7f2e5835d000)
+TritonShmResource::allocate() : 602112 bytes, 2408448 remaining (0x7f2e5835d0a0)
+TritonShmResource::allocate() : 602112 bytes, 1806336 remaining (0x7f2e583f00a0)
+TritonShmResource::allocate() : 602112 bytes, 1204224 remaining (0x7f2e584830a0)
+TritonShmResource::allocate() : 602112 bytes, 602112 remaining (0x7f2e585160a0)
+TritonShmResource::allocate() : 602112 bytes, 0 remaining (0x7f2e585a90a0)
 offset0 = 160
-error: unable to run model: Socket closed
+batch 0
+        inputs: 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, ...
+        outputs: 0.000167075, 0.00060421, 7.23332e-05, 4.86887e-05, 0.000119915, 0.000246135, 1.82023e-05, 0.000186773, 5.15053e-05, 0.000431815, ...
+batch 1
+        inputs: 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, ...
+        outputs: 0.000167215, 0.000612563, 7.18206e-05, 4.76253e-05, 0.000121269, 0.000249971, 1.84608e-05, 0.000179769, 5.15851e-05, 0.000418512, ...
+batch 2
+        inputs: 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, ...
+        outputs: 0.000174489, 0.000615822, 7.38812e-05, 4.76297e-05, 0.000126701, 0.000263326, 1.94412e-05, 0.00017864, 5.38571e-05, 0.000416091, ...
+batch 3
+        inputs: 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, ...
+        outputs: 0.000185543, 0.000615438, 7.74539e-05, 4.83911e-05, 0.000134673, 0.000277013, 2.10373e-05, 0.000179367, 5.68413e-05, 0.000421287, ...
+batch 4
+        inputs: 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, ...
+        outputs: 0.000197231, 0.00060928, 8.12652e-05, 4.95069e-05, 0.00014306, 0.00029046, 2.28279e-05, 0.000181557, 6.01525e-05, 0.000432174, ...
+Shared Memory Status:
+regions {
+  key: "shm_input0"
+  value {
+    name: "shm_input0"
+    key: "shm_input0"
+    byte_size: 3010720
+  }
+}
+regions {
+  key: "shm_output0"
+  value {
+    name: "shm_output0"
+    key: "shm_output0"
+    byte_size: 20000
+  }
+}
+
+TritonShmResource::deallocate() : 602112 bytes, 2408608 remaining
+TritonShmResource::deallocate() : 602112 bytes, 1806496 remaining
+TritonShmResource::deallocate() : 602112 bytes, 1204384 remaining
+TritonShmResource::deallocate() : 602112 bytes, 602272 remaining
+TritonShmResource::deallocate() : 602112 bytes, 160 remaining
+TritonShmResource::deallocate() : 160 bytes, 0 remaining
+PASS : System Shared Memory 
 ```
-while other times, it produces output similar to `resnet_grpc_shm_client2.exe`,
-except the outputs for the last batch entry are all 0.

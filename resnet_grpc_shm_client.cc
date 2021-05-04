@@ -74,6 +74,7 @@ public:
   TritonShmResource(std::string name, size_t size);
   virtual ~TritonShmResource();
   uint8_t* addr() { return addr_; }
+  size_t size() const { return size_; }
   void close();
 private:
   //required interface
@@ -246,7 +247,7 @@ main(int argc, char** argv)
   size_t offset0 = ((uint8_t*)input0_shm[0].data() - iresource0->addr());
   std::cout << "offset0 = " << offset0 << std::endl;
   FAIL_IF_ERR(
-      client->RegisterSystemSharedMemory(iname0, iname0, input_byte_size),
+      client->RegisterSystemSharedMemory(iname0, iname0, iresource0->size()),
       "failed to register input0 shared memory region");
   FAIL_IF_ERR(
       input0_ptr->SetSharedMemory(
